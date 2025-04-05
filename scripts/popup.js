@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const toggleProtection = document.getElementById('toggleProtection');
-    const todayCount = document.getElementById('todayCount');
-    const totalCount = document.getElementById('totalCount');
     const adShowingClass = document.getElementById('adShowingClass');
     const saveSettings = document.getElementById('saveSettings');
 
@@ -14,27 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         adShowingClass.value = youtubeSettings.adShowingClass;
     } catch (error) {
         console.error('Error loading settings:', error);
-    }
-
-    // Initialize statistics
-    try {
-        const stats = await chrome.storage.local.get(['todayBlocked', 'totalBlocked', 'lastDate']);
-        const today = new Date().toDateString();
-        
-        // Reset daily count if it's a new day
-        if (stats.lastDate !== today) {
-            await chrome.storage.local.set({
-                todayBlocked: 0,
-                lastDate: today
-            });
-            todayCount.textContent = '0';
-        } else {
-            todayCount.textContent = stats.todayBlocked || '0';
-        }
-
-        totalCount.textContent = stats.totalBlocked || '0';
-    } catch (error) {
-        console.error('Error loading statistics:', error);
     }
 
     // Handle toggle switch changes
@@ -92,14 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     window.close();
                 }, 1000);
             }, 2000);
-        }
-    });
-
-    // Listen for statistics updates from background script
-    chrome.runtime.onMessage.addListener((message) => {
-        if (message.type === 'STATS_UPDATED') {
-            todayCount.textContent = message.todayBlocked || '0';
-            totalCount.textContent = message.totalBlocked || '0';
         }
     });
 }); 

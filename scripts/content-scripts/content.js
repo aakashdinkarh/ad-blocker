@@ -43,18 +43,18 @@ function skipAd() {
         return;
     }
     const skipButton = moviePlayer.querySelector('.ytp-skip-ad-button');
-    
-    const adPlaying = moviePlayer.classList.contains(youtubeSettings.adShowingClass);
-    console.log(adPlaying);
 
+    // Use configurable class for ad detection
+    const adPlaying = moviePlayer.classList.contains(youtubeSettings.adShowingClass);
+
+    // Only proceed if there's actually an ad playing
+    if (video && video.duration > 0 && adPlaying) {
+        // If no skip button or it's not working, try to forward to end
+        video.currentTime = video.duration;
+    }
     // Try to skip if button exists
     if (skipButton) {
-        debugger;
         skipButton.click();
-        console.log('skipped called');
-    }
-    if (video && video.duration > 0 && adPlaying) {
-        video.currentTime = video.duration;
     }
 }
 
@@ -67,30 +67,32 @@ function handleYouTubeAds() {
     skipAd();
 }
 
+// Load YouTube settings
+async function loadYouTubeSettings() {
+    try {
+        const { youtubeSettings: settings = { adShowingClass: 'ad-showing' } } = 
+            await chrome.storage.sync.get('youtubeSettings');
+        youtubeSettings = settings;
+    } catch (error) {
+        console.error('Error loading YouTube settings:', error);
+    }
+}
+
 // Function to remove ads from the page
 function removeAds() {
-    let removedCount = 0;
-    
     AD_SELECTORS.forEach(selector => {
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => {
             element.remove();
-            removedCount++;
         });
     });
-
-    if (removedCount > 0) {
-        // Notify background script about removed ads
-        chrome.runtime.sendMessage({
-            type: 'ADS_REMOVED',
-            count: removedCount
-        });
-    }
 }
+
+let observer;
 
 // Function to observe DOM changes for dynamically loaded ads
 function observeDOMChanges() {
-    const observer = new MutationObserver((mutations) => {
+    observer = new MutationObserver((mutations) => {
         let shouldRemoveAds = false;
         
         mutations.forEach(mutation => {
@@ -101,7 +103,7 @@ function observeDOMChanges() {
 
         if (shouldRemoveAds) {
             // removeAds();
-            handleYouTubeAds(); // Focus on YouTube ads
+            handleYouTubeAds();
         }
     });
 
@@ -131,15 +133,8 @@ function observeDOMChanges() {
     }
 }
 
-// Load YouTube settings
-async function loadYouTubeSettings() {
-    try {
-        const { youtubeSettings: settings = { adShowingClass: 'ad-showing' } } = 
-            await chrome.storage.sync.get('youtubeSettings');
-        youtubeSettings = settings;
-    } catch (error) {
-        console.error('Error loading YouTube settings:', error);
-    }
+function unobserveDOMChanges() {
+    observer.disconnect();
 }
 
 // Listen for settings updates
@@ -152,8 +147,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             observeDOMChanges();
             handleYouTubeAds();
         } else {
-            // If needed, could reload the page to restore ads
-            // window.location.reload();
+            unobserveDOMChanges();
         }
     }
 });
@@ -178,20 +172,6 @@ async function initialize() {
         console.error('Error initializing content script:', error);
     }
 }
-
-// Listen for toggle changes from popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'TOGGLE_PROTECTION') {
-        if (message.isEnabled) {
-            // removeAds();
-            observeDOMChanges();
-            handleYouTubeAds();
-        } else {
-            // If needed, could reload the page to restore ads
-            // window.location.reload();
-        }
-    }
-});
 
 // Start the ad blocking
 initialize(); 

@@ -14,9 +14,5 @@
 	"action": {
 		"default_popup": "popup.html"
 	},
-	"host_permissions": ["http://*/*", "https://*/*"],
-	"background": {
-		"service_worker": "scripts/service-worker/background.js",
-		"type": "module"
-	}
+	"host_permissions": ["http://*/*", "https://*/*"]
 }
