@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Blocker</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 0 0 16px 0;
+            color: #1a73e8;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1a73e8;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .stats {
+            background-color: #f1f3f4;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #5f6368;
+        }
+
+        .stat-value {
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .youtube-settings {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .youtube-settings h2 {
+            font-size: 14px;
+            margin: 0 0 12px 0;
+            color: #5f6368;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .settings-item input[type="text"] {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .settings-item input[type="text"]:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        .save-button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .save-button:hover {
+            background-color: #1557b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ad Blocker</h1>
+        
+        <div class="status">
+            <span>Protection</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggleProtection" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">Ads Blocked Today</span>
+                <span class="stat-value" id="todayCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Ads Blocked</span>
+                <span class="stat-value" id="totalCount">0</span>
+            </div>
+        </div>
+
+        <div class="youtube-settings">
+            <h2>YouTube Ad Detection</h2>
+            <div class="settings-item">
+                <input type="text" id="adShowingClass" placeholder="Ad showing class (e.g., ad-showing)">
+            </div>
+            <button class="save-button" id="saveSettings">Save Settings</button>
+        </div>
+    </div>
+    <script src="scripts/popup.js"></script>
+</body>
+</html> 
