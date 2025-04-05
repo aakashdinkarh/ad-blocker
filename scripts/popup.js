@@ -17,13 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle toggle switch changes
     toggleProtection.addEventListener('change', async () => {
         try {
+            // Just update storage - content scripts will watch for changes
             await chrome.storage.sync.set({ isEnabled: toggleProtection.checked });
-            
-            // Send message to background script to update blocking state
-            await chrome.runtime.sendMessage({
-                type: 'TOGGLE_PROTECTION',
-                isEnabled: toggleProtection.checked
-            });
         } catch (error) {
             console.error('Error saving toggle state:', error);
             // Revert toggle if save fails

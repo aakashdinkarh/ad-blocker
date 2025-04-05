@@ -133,21 +133,33 @@ function observeDOMChanges() {
     }
 }
 
+// Listen for settings updates and storage changes
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'YOUTUBE_SETTINGS_UPDATED') {
+        youtubeSettings = message.settings;
+    }
+});
+
 function unobserveDOMChanges() {
     observer.disconnect();
 }
 
-// Listen for settings updates
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'YOUTUBE_SETTINGS_UPDATED') {
-        youtubeSettings = message.settings;
-    } else if (message.type === 'TOGGLE_PROTECTION') {
-        if (message.isEnabled) {
-            // removeAds();
-            observeDOMChanges();
-            handleYouTubeAds();
-        } else {
-            unobserveDOMChanges();
+
+// Listen for storage changes
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync') {
+        if (changes.isEnabled) {
+            const isEnabled = changes.isEnabled.newValue;
+            if (isEnabled) {
+                // removeAds();
+                observeDOMChanges();
+                handleYouTubeAds();
+            } else {
+                unobserveDOMChanges();
+            }
+        }
+        if (changes.youtubeSettings) {
+            youtubeSettings = changes.youtubeSettings.newValue;
         }
     }
 });
